@@ -1,3 +1,5 @@
+import { WebGLRenderer } from 'three'
+
 import { createHookableFunction } from '@xrengine/common/src/utils/createHookableFunction'
 import { dispatchAction, getState } from '@xrengine/hyperflux'
 
@@ -86,7 +88,6 @@ export const requestXRSession = createHookableFunction(
       const world = Engine.instance.currentWorld
 
       if (mode === 'immersive-ar') setupARSession(world)
-      if (mode === 'immersive-vr') setupVRSession(world)
 
       const prevFollowCamera = getComponent(world.cameraEntity, FollowCameraComponent)
       removeComponent(world.cameraEntity, FollowCameraComponent)
@@ -110,6 +111,7 @@ export const requestXRSession = createHookableFunction(
       }
       xrManager.addEventListener('sessionend', onSessionEnd)
 
+      console.log({ xrFrame: Engine.instance.xrFrame })
       dispatchAction(XRAction.sessionChanged({ active: true }))
     } catch (e) {
       console.error('Failed to create XR Session', e)
@@ -141,8 +143,6 @@ export const xrSessionChanged = createHookableFunction((action: typeof XRAction.
     }
   }
 })
-
-export const setupVRSession = (world = Engine.instance.currentWorld) => {}
 
 export const setupARSession = (world = Engine.instance.currentWorld) => {
   EngineRenderer.instance.renderer.domElement.style.display = 'none'

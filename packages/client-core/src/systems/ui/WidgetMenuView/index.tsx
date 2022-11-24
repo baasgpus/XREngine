@@ -153,11 +153,6 @@ const WidgetButtons = () => {
             label={isCamAudioEnabled.value ? 'Audio on' : 'Audio Off'}
           />
         )}
-        {/* <WidgetButton
-          Icon={VrIcon}
-          toggle={toggleVRSession}
-          label={engineState.xrSessionStarted.value ? 'Exit VR' : 'Enter VR'}
-        /> */}
         {widgets.map(
           (widget, i) =>
             widget.enabled &&

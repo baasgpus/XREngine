@@ -281,7 +281,7 @@ export default async function XRAnchorSystem(world: World) {
     for (const action of xrSessionChangedQueue()) {
       if (action.active) {
         if (xrState.sessionMode.value === 'immersive-ar') {
-          const session = EngineRenderer.instance.xrSession
+          const session = Engine.instance.xrFrame!.session
           session.requestReferenceSpace('viewer').then((viewerReferenceSpace) => {
             const xrState = getState(XRState)
             xrState.viewerReferenceSpace.set(viewerReferenceSpace)

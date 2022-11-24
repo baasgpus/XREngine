@@ -98,7 +98,7 @@ export class EngineRenderer {
 
   renderer: WebGLRenderer = null!
   effectComposer: EffectComposerWithSchema = null!
-  /** @todo deprecate and replace with engine implementation */
+  /** @deprecated */
   xrManager: WebXRManager = null!
   /** @deprecated use Engine.instance.xrFrame.session instead */
   xrSession: XRSession = null!
@@ -216,7 +216,7 @@ export class EngineRenderer {
     const activeSession = getState(XRState).sessionActive.value
 
     /** Postprocessing does not support multipass yet, so just use basic renderer when in VR */
-    if ((isHMD && activeSession) || EngineRenderer.instance.xrSession) {
+    if ((isHMD && activeSession) || Engine.instance.xrFrame) {
       this.renderer.render(Engine.instance.currentWorld.scene, Engine.instance.currentWorld.camera)
     } else {
       const state = accessEngineRendererState()

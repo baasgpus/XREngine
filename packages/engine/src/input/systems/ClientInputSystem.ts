@@ -140,7 +140,7 @@ export default async function ClientInputSystem(world: World) {
   world.pointerScreenRaycaster.layers.enableAll()
 
   const execute = () => {
-    if (!EngineRenderer.instance?.xrSession) {
+    if (!Engine.instance.xrFrame) {
       handleGamepads()
     }
 
