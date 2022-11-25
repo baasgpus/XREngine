@@ -3,13 +3,15 @@ import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProjectBranchInterface } from '@xrengine/common/src/interfaces/ProjectBranchInterface'
-import { ProjectInterface } from '@xrengine/common/src/interfaces/ProjectInterface'
+import { ProjectInterface, ProjectUpdateType } from '@xrengine/common/src/interfaces/ProjectInterface'
 import { ProjectTagInterface } from '@xrengine/common/src/interfaces/ProjectTagInterface'
 
 import { Difference } from '@mui/icons-material'
 import Cancel from '@mui/icons-material/Cancel'
 import CheckCircle from '@mui/icons-material/CheckCircle'
+import HelpIcon from '@mui/icons-material/Help'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import DialogTitle from '@mui/material/DialogTitle'
 import IconButton from '@mui/material/IconButton'
@@ -17,7 +19,9 @@ import Tooltip from '@mui/material/Tooltip'
 
 import { ProjectService } from '../../../common/services/ProjectService'
 import { useAuthState } from '../../../user/services/AuthService'
+import InputRadio from '../../common/InputRadio'
 import InputSelect, { InputMenuItem } from '../../common/InputSelect'
+import InputSwitch from '../../common/InputSwitch'
 import InputText from '../../common/InputText'
 import LoadingView from '../../common/LoadingView'
 import { ProjectUpdateService, useProjectUpdateState } from '../../services/ProjectUpdateService'
@@ -41,7 +45,8 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
           name: 'tempProject',
           thumbnail: '',
           repositoryPath: '',
-          needsRebuild: false
+          needsRebuild: false,
+          updateType: 'none' as ProjectUpdateType
         }
 
   useEffect(() => {
@@ -238,10 +243,25 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
     }
   }, [projectUpdateStatus?.value?.triggerSetDestination])
 
+  const handleAutoUpdateEnabledChange = (event) => {
+    // setState({ ...state, [event.target.name]: event.target.checked })
+  }
+
+  const handleAutoUpdateModeChange = (e) => {
+    const { name, value } = e.target
+    // setState({ ...state, [name]: value, formErrors: tempErrors })
+  }
+
+  const handleAutoUpdateIntervalChange = (e) => {
+    const { value } = e.target
+
+    // setAutoRefresh(value)
+  }
+
   return (
     <>
       {projectUpdateStatus && (
-        <Container maxWidth="sm" className={styles.mt20}>
+        <Container maxWidth="sm" className={styles.mt10}>
           <DialogTitle
             className={classNames({
               [styles.textAlign]: true,
@@ -441,6 +461,98 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
               {!projectUpdateStatus.value?.sourceProjectMatchesDestination && <Cancel />}
               {t('admin:components.project.sourceMatchesDestination')}
             </div>
+          )}
+
+          {!changeDestination && (
+            <>
+              <DialogTitle
+                className={classNames({
+                  [styles.textAlign]: true,
+                  [styles.drawerSubHeader]: true
+                })}
+              >
+                {t('admin:components.project.autoUpdate')}
+              </DialogTitle>
+
+              <InputSwitch
+                name="autoUpdateEnabled"
+                label={t('admin:components.project.enableAutoUpdate')}
+                checked={true}
+                onChange={handleAutoUpdateEnabledChange}
+              />
+
+              <InputRadio
+                name="autoUpdateMode"
+                label={t('admin:components.project.autoUpdateMode')}
+                value={'prod'}
+                options={[
+                  {
+                    value: 'prod',
+                    label: (
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        {t('admin:components.project.prod')}
+                        <Tooltip title={t('admin:components.project.prodTooltip')} arrow>
+                          <HelpIcon sx={{ fontSize: '20px', marginLeft: '5px', marginRight: '15px' }} />
+                        </Tooltip>
+                      </Box>
+                    )
+                  },
+                  {
+                    value: 'dev',
+                    label: (
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        {t('admin:components.project.dev')}
+                        <Tooltip title={t('admin:components.project.devTooltip')} arrow>
+                          <HelpIcon sx={{ fontSize: '20px', marginLeft: '5px', marginRight: '15px' }} />
+                        </Tooltip>
+                      </Box>
+                    )
+                  }
+                ]}
+                onChange={handleAutoUpdateModeChange}
+              />
+
+              <InputSelect
+                name="autoUpdateInterval"
+                label={t('admin:components.project.autoUpdateInterval')}
+                value={'3600'}
+                menu={[
+                  {
+                    value: '60',
+                    label: `1 ${t('admin:components.project.minute')}`
+                  },
+                  {
+                    value: '300',
+                    label: `5 ${t('admin:components.project.minutes')}`
+                  },
+                  {
+                    value: '1800',
+                    label: `30 ${t('admin:components.project.minutes')}`
+                  },
+                  {
+                    value: '3600',
+                    label: `1 ${t('admin:components.project.hour')}`
+                  },
+                  {
+                    value: '10800',
+                    label: `3 ${t('admin:components.project.hours')}`
+                  },
+                  {
+                    value: '21600',
+                    label: `6 ${t('admin:components.project.hours')}`
+                  },
+                  {
+                    value: '43200',
+                    label: `12 ${t('admin:components.project.hours')}`
+                  },
+                  {
+                    value: '86400',
+                    label: `1 ${t('admin:components.project.day')}`
+                  }
+                ]}
+                onChange={handleAutoUpdateIntervalChange}
+              />
+            </>
           )}
         </Container>
       )}

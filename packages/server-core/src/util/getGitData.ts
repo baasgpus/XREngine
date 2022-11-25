@@ -6,7 +6,7 @@ import ini from 'ini'
 
 import logger from '../ServerLogger'
 
-export interface GitData {
+export interface GitConfigData {
   core: {
     repositoryformatversion: number
     filemode: boolean
@@ -27,16 +27,50 @@ export interface GitData {
   }
 }
 
-export function getGitData(dir): GitData {
+export function getGitHeadData(dir: string): string | undefined {
+  dir = dir + '/HEAD'
+
+  if (!fs.existsSync(dir)) {
+    logger.warn('[Projects]: Could not find git HEAD file at: ' + dir)
+    return null!
+  }
+  const data = fs.readFileSync(dir)
+  try {
+    return data.toString().split(':')[1].trim().split('/').pop()
+  } catch (e) {
+    logger.error(e, `Error getting git HEAD data: ${e.message}`)
+  }
+  return null!
+}
+
+export function getGitOrigHeadData(dir: string): string | undefined {
+  dir = dir + '/ORIG_HEAD'
+
+  if (!fs.existsSync(dir)) {
+    logger.warn('[Projects]: Could not find git ORIG_HEAD file at: ' + dir)
+    return null!
+  }
+  const data = fs.readFileSync(dir)
+  try {
+    return data.toString().trim()
+  } catch (e) {
+    logger.error(e, `Error getting git ORIG_HEAD data: ${e.message}`)
+  }
+  return null!
+}
+
+export function getGitConfigData(dir: string): GitConfigData {
+  dir = dir + '/config'
+
   if (!fs.existsSync(dir)) {
     logger.warn('[Projects]: Could not find git config file at: ' + dir)
     return null!
   }
   const data = fs.readFileSync(dir)
   try {
-    return format(ini.parse(data.toString())) as GitData
+    return format(ini.parse(data.toString())) as GitConfigData
   } catch (e) {
-    logger.error(e, `Error getting git data: ${e.message}`)
+    logger.error(e, `Error getting git config data: ${e.message}`)
   }
   return null!
 }

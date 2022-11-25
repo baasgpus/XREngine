@@ -2,6 +2,8 @@ import { IPackageJson } from 'package-json-type'
 
 import { ProjectPermissionInterface } from './ProjectPermissionInterface'
 
+export type ProjectUpdateType = 'none' | 'commit' | 'tag'
+
 export interface ProjectInterface {
   id: string
   name: string
@@ -12,6 +14,12 @@ export interface ProjectInterface {
   description?: string
   settings?: string
   needsRebuild: boolean
+  destinationSha?: string
+  sourceRepo?: string
+  sourceBranch?: string
+  updateType: ProjectUpdateType
+  updateSchedule?: string
+  updateUserId?: string
   hasWriteAccess?: boolean
   project_permissions?: ProjectPermissionInterface[]
 }

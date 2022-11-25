@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProjectInterface } from '@xrengine/common/src/interfaces/ProjectInterface'
+import { ProjectInterface, ProjectUpdateType } from '@xrengine/common/src/interfaces/ProjectInterface'
 
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -35,7 +35,8 @@ const ProjectDrawer = ({ open, inputProject, existingProject = false, onClose, c
           name: 'tempProject',
           thumbnail: '',
           repositoryPath: '',
-          needsRebuild: false
+          needsRebuild: false,
+          updateType: 'none' as ProjectUpdateType
         }
 
   const projectUpdateStatus = useProjectUpdateState()[project.name].value

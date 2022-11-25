@@ -30,7 +30,7 @@ interface Props {
 
 export interface InputMenuItem {
   value: string
-  label: string
+  label: React.ReactNode
 }
 
 const InputSelect = ({

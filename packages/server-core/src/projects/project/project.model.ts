@@ -29,6 +29,24 @@ export default (app: Application) => {
       },
       needsRebuild: {
         type: DataTypes.BOOLEAN
+      },
+      destinationSha: {
+        type: DataTypes.STRING
+      },
+      sourceRepo: {
+        type: DataTypes.STRING
+      },
+      sourceBranch: {
+        type: DataTypes.STRING
+      },
+      updateType: {
+        type: DataTypes.STRING
+      },
+      updateSchedule: {
+        type: DataTypes.STRING
+      },
+      updateUserId: {
+        type: DataTypes.UUID
       }
     },
     {

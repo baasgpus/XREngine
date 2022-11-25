@@ -23,7 +23,7 @@ import { UserParams } from '../../user/user/user.class'
 import { cleanString } from '../../util/cleanString'
 import { getContentType } from '../../util/fileUtils'
 import { copyFolderRecursiveSync, deleteFolderRecursive, getFilesRecursive } from '../../util/fsHelperFunctions'
-import { getGitData } from '../../util/getGitData'
+import { getGitConfigData, getGitHeadData, getGitOrigHeadData } from '../../util/getGitData'
 import { useGit } from '../../util/gitHelperFunctions'
 import {
   checkAppOrgStatus,
@@ -59,10 +59,33 @@ export const copyDefaultProject = () => {
   copyFolderRecursiveSync(path.join(appRootPath.path, 'packages/projects/default-project'), projectsRootFolder)
 }
 
-const getRemoteURLFromGitData = (project) => {
-  const data = getGitData(path.resolve(__dirname, `../../../../projects/projects/${project}/.git/config`))
-  if (!data?.remote) return null
-  return data.remote.origin.url
+const getGitProjectData = (project) => {
+  const response = {
+    repositoryPath: '',
+    sourceRepo: '',
+    sourceBranch: '',
+    destinationSha: ''
+  }
+
+  const projectGitDir = path.resolve(__dirname, `../../../../projects/projects/${project}/.git`)
+
+  const config = getGitConfigData(projectGitDir)
+  if (config?.remote?.origin?.url) {
+    response.repositoryPath = config?.remote?.origin?.url
+    response.sourceRepo = config?.remote?.origin?.url
+  }
+
+  const branch = getGitHeadData(projectGitDir)
+  if (branch) {
+    response.sourceBranch = branch
+  }
+
+  const sha = getGitOrigHeadData(projectGitDir)
+  if (sha) {
+    response.destinationSha = sha
+  }
+
+  return response
 }
 
 export const deleteProjectFilesInStorageProvider = async (projectName: string, storageProviderName?: string) => {
@@ -156,10 +179,15 @@ export class Project extends Service {
   async _seedProject(projectName: string): Promise<any> {
     logger.warn('[Projects]: Found new locally installed project: ' + projectName)
     const projectConfig = (await getProjectConfig(projectName)) ?? {}
+    const gitData = getGitProjectData(projectName)
+
     await super.create({
       thumbnail: projectConfig.thumbnail,
       name: projectName,
-      repositoryPath: getRemoteURLFromGitData(projectName),
+      repositoryPath: gitData.repositoryPath,
+      destinationSha: gitData.destinationSha,
+      sourceRepo: gitData.sourceRepo,
+      sourceBranch: gitData.sourceBranch,
       needsRebuild: true
     })
     // run project install script

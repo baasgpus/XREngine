@@ -5,4 +5,10 @@ export interface ProjectInterface {
   repositoryPath: string
   settings: string
   needsRebuild: boolean
+  destinationSha: string
+  sourceRepo: string
+  sourceBranch: string
+  updateType: string
+  updateSchedule: string
+  updateUserId: string
 }
