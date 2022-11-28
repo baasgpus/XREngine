@@ -7,7 +7,11 @@ import path from 'path'
 import Sequelize, { Op } from 'sequelize'
 
 import { GITHUB_URL_REGEX, PUBLIC_SIGNED_REGEX } from '@xrengine/common/src/constants/GitHubConstants'
-import { ProjectInterface } from '@xrengine/common/src/interfaces/ProjectInterface'
+import {
+  DefaultUpdateSchedule,
+  ProjectInterface,
+  ProjectUpdateType
+} from '@xrengine/common/src/interfaces/ProjectInterface'
 import { UserInterface } from '@xrengine/common/src/interfaces/User'
 import { processFileName } from '@xrengine/common/src/utils/processFileName'
 import templateProjectJson from '@xrengine/projects/template-project/package.json'
@@ -188,7 +192,9 @@ export class Project extends Service {
       destinationSha: gitData.destinationSha,
       sourceRepo: gitData.sourceRepo,
       sourceBranch: gitData.sourceBranch,
-      needsRebuild: true
+      needsRebuild: true,
+      updateType: 'none' as ProjectUpdateType,
+      updateSchedule: DefaultUpdateSchedule
     })
     // run project install script
     if (projectConfig.onEvent) {
@@ -297,9 +303,9 @@ export class Project extends Service {
       needsRebuild?: boolean
       reset?: boolean
       commitSHA?: string
-      sourceBranch
-      updateType
-      updateSchedule
+      sourceBranch: string
+      updateType: ProjectUpdateType
+      updateSchedule: string
     },
     placeholder?: null,
     params?: UserParams
@@ -382,11 +388,24 @@ export class Project extends Service {
             thumbnail: projectConfig.thumbnail,
             name: projectName,
             repositoryPath,
-            needsRebuild: data.needsRebuild ? data.needsRebuild : true
+            needsRebuild: data.needsRebuild ? data.needsRebuild : true,
+            destinationSha: data.commitSHA,
+            sourceRepo: data.sourceURL,
+            sourceBranch: data.sourceBranch,
+            updateType: data.updateType,
+            updateSchedule: data.updateSchedule,
+            updateUserId: user.id
           },
           params || {}
         )
-      : existingProjectResult
+      : await super.patch(existingProjectResult.id, {
+          destinationSha: data.commitSHA,
+          sourceRepo: data.sourceURL,
+          sourceBranch: data.sourceBranch,
+          updateType: data.updateType,
+          updateSchedule: data.updateSchedule,
+          updateUserId: user.id
+        })
 
     returned.needsRebuild = typeof data.needsRebuild === 'boolean' ? data.needsRebuild : true
 
@@ -569,8 +588,8 @@ export class Project extends Service {
             }
           }
         })
-
-        projectPushIds = projectPushIds.concat(matchingAllowedRepos.map((repo) => repo.id))
+        //github.com/XRFoundation/XREngine-development-test-suite
+        https: projectPushIds = projectPushIds.concat(matchingAllowedRepos.map((repo) => repo.id))
       }
 
       if (!params.user!.scopes?.find((scope) => scope.type === 'admin:admin'))

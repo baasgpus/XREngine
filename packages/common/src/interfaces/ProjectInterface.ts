@@ -4,6 +4,8 @@ import { ProjectPermissionInterface } from './ProjectPermissionInterface'
 
 export type ProjectUpdateType = 'none' | 'commit' | 'tag'
 
+export const DefaultUpdateSchedule = '0 * * * *'
+
 export interface ProjectInterface {
   id: string
   name: string

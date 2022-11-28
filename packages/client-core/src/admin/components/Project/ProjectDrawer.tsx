@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProjectInterface, ProjectUpdateType } from '@xrengine/common/src/interfaces/ProjectInterface'
+import {
+  DefaultUpdateSchedule,
+  ProjectInterface,
+  ProjectUpdateType
+} from '@xrengine/common/src/interfaces/ProjectInterface'
 
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -11,7 +15,7 @@ import { NotificationService } from '../../../common/services/NotificationServic
 import { ProjectService } from '../../../common/services/ProjectService'
 import DrawerView from '../../common/DrawerView'
 import LoadingView from '../../common/LoadingView'
-import { DefaultUpdateSchedule, ProjectUpdateService, useProjectUpdateState } from '../../services/ProjectUpdateService'
+import { ProjectUpdateService, useProjectUpdateState } from '../../services/ProjectUpdateService'
 import styles from '../../styles/admin.module.scss'
 import ProjectFields from './ProjectFields'
 
