@@ -297,6 +297,9 @@ export class Project extends Service {
       needsRebuild?: boolean
       reset?: boolean
       commitSHA?: string
+      sourceBranch
+      updateType
+      updateSchedule
     },
     placeholder?: null,
     params?: UserParams
@@ -585,7 +588,18 @@ export class Project extends Service {
       query: {
         ...params?.query,
         $limit: params?.query?.$limit || 1000,
-        $select: params?.query?.$select || ['id', 'name', 'thumbnail', 'repositoryPath', 'needsRebuild']
+        $select: params?.query?.$select || [
+          'id',
+          'name',
+          'thumbnail',
+          'repositoryPath',
+          'needsRebuild',
+          'destinationSha',
+          'sourceRepo',
+          'sourceBranch',
+          'updateType',
+          'updateSchedule'
+        ]
       }
     }
 

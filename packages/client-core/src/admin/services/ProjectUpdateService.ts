@@ -1,7 +1,7 @@
 import { none } from '@hookstate/core'
 
 import { ProjectBranchInterface } from '@xrengine/common/src/interfaces/ProjectBranchInterface'
-import { ProjectInterface } from '@xrengine/common/src/interfaces/ProjectInterface'
+import { ProjectInterface, ProjectUpdateType } from '@xrengine/common/src/interfaces/ProjectInterface'
 import { ProjectTagInterface } from '@xrengine/common/src/interfaces/ProjectTagInterface'
 import { matches, Validator } from '@xrengine/engine/src/common/functions/MatchesUtils'
 import { defineAction, defineState, dispatchAction, getState, useState } from '@xrengine/hyperflux'
@@ -10,6 +10,8 @@ const ProjectUpdateState = defineState({
   name: 'ProjectUpdateState',
   initial: () => ({})
 })
+
+export const DefaultUpdateSchedule = '0 * * * *'
 
 const initializeProjectUpdateReceptor = (action: typeof ProjectUpdateActions.initializeProjectUpdate.matches._TYPE) => {
   const state = getState(ProjectUpdateState)
@@ -40,7 +42,9 @@ const initializeProjectUpdateReceptor = (action: typeof ProjectUpdateActions.ini
     selectedSHA: '',
     projectName: '',
     submitDisabled: true,
-    triggerSetDestination: false
+    triggerSetDestination: false,
+    updateType: 'none' as ProjectUpdateType,
+    updateSchedule: DefaultUpdateSchedule
   })
 }
 
@@ -190,8 +194,19 @@ export const ProjectUpdateService = {
     )
   },
   setTriggerSetDestination: (project: ProjectInterface, trigger: string) => {
+    ProjectUpdateService.setUpdateType(project, project.updateType || 'none')
+    ProjectUpdateService.setUpdateSchedule(project, project.updateSchedule || DefaultUpdateSchedule)
+
     dispatchAction(
       ProjectUpdateActions.setProjectUpdateField({ project, fieldName: 'triggerSetDestination', value: trigger })
+    )
+  },
+  setUpdateType: (project: ProjectInterface, type: ProjectUpdateType) => {
+    dispatchAction(ProjectUpdateActions.setProjectUpdateField({ project, fieldName: 'updateType', value: type }))
+  },
+  setUpdateSchedule: (project: ProjectInterface, schedule: string) => {
+    dispatchAction(
+      ProjectUpdateActions.setProjectUpdateField({ project, fieldName: 'updateSchedule', value: schedule })
     )
   },
 

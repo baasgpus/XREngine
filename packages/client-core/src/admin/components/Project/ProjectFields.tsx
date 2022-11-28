@@ -86,6 +86,13 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
       } else {
         ProjectUpdateService.setShowBranchSelector(project, true)
         ProjectUpdateService.setBranchData(project, branchResponse)
+        if (project.sourceBranch) {
+          const branchExists = branchResponse.find((item: ProjectBranchInterface) => item.name === project.sourceBranch)
+
+          if (branchExists) {
+            handleChangeBranch({ target: { value: project.sourceBranch } })
+          }
+        }
       }
     } catch (err) {
       ProjectUpdateService.setBranchProcessing(project, false)
@@ -120,6 +127,10 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
             ProjectUpdateService.setDestinationValid(project, destinationResponse.destinationValid)
             if (destinationResponse.projectName)
               ProjectUpdateService.setDestinationProjectName(project, destinationResponse.projectName)
+            if (project.sourceRepo) {
+              handleChangeSource({ target: { value: project.sourceRepo } })
+              handleChangeSourceRepo({ target: { value: project.sourceRepo } })
+            }
             if (destinationResponse.repoEmpty) ProjectUpdateService.setDestinationRepoEmpty(project, true)
             if (projectUpdateStatus.value.selectedSHA.length > 0)
               handleTagChange({ target: { value: projectUpdateStatus.value.selectedSHA } })
@@ -153,6 +164,16 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
       } else {
         ProjectUpdateService.setShowTagSelector(project, true)
         ProjectUpdateService.setTagData(project, projectResponse)
+
+        if (project.destinationSha) {
+          const tagExists = projectResponse.find(
+            (item: ProjectTagInterface) => item.commitSHA === project.destinationSha
+          )
+
+          if (tagExists) {
+            handleTagChange({ target: { value: project.destinationSha } })
+          }
+        }
       }
     } catch (err) {
       ProjectUpdateService.setTagsProcessing(project, false)
@@ -243,19 +264,19 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
     }
   }, [projectUpdateStatus?.value?.triggerSetDestination])
 
-  const handleAutoUpdateEnabledChange = (event) => {
-    // setState({ ...state, [event.target.name]: event.target.checked })
+  const handleAutoUpdateEnabledChange = (e) => {
+    const { checked } = e.target
+    ProjectUpdateService.setUpdateType(project, checked ? 'tag' : 'none')
   }
 
   const handleAutoUpdateModeChange = (e) => {
-    const { name, value } = e.target
-    // setState({ ...state, [name]: value, formErrors: tempErrors })
+    const { value } = e.target
+    ProjectUpdateService.setUpdateType(project, value === 'prod' ? 'tag' : 'commit')
   }
 
   const handleAutoUpdateIntervalChange = (e) => {
     const { value } = e.target
-
-    // setAutoRefresh(value)
+    ProjectUpdateService.setUpdateSchedule(project, value)
   }
 
   return (
@@ -477,14 +498,18 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
               <InputSwitch
                 name="autoUpdateEnabled"
                 label={t('admin:components.project.enableAutoUpdate')}
-                checked={true}
+                checked={projectUpdateStatus.value?.updateType !== 'none'}
                 onChange={handleAutoUpdateEnabledChange}
               />
+            </>
+          )}
 
+          {!changeDestination && projectUpdateStatus.value?.updateType !== 'none' && (
+            <>
               <InputRadio
                 name="autoUpdateMode"
                 label={t('admin:components.project.autoUpdateMode')}
-                value={'prod'}
+                value={projectUpdateStatus.value?.updateType === 'tag' ? 'prod' : 'dev'}
                 options={[
                   {
                     value: 'prod',
@@ -515,38 +540,38 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
               <InputSelect
                 name="autoUpdateInterval"
                 label={t('admin:components.project.autoUpdateInterval')}
-                value={'3600'}
+                value={projectUpdateStatus.value?.updateSchedule}
                 menu={[
                   {
-                    value: '60',
+                    value: '* * * * *',
                     label: `1 ${t('admin:components.project.minute')}`
                   },
                   {
-                    value: '300',
+                    value: '*/5 * * * *',
                     label: `5 ${t('admin:components.project.minutes')}`
                   },
                   {
-                    value: '1800',
+                    value: '*/30 * * * *',
                     label: `30 ${t('admin:components.project.minutes')}`
                   },
                   {
-                    value: '3600',
+                    value: '0 * * * *',
                     label: `1 ${t('admin:components.project.hour')}`
                   },
                   {
-                    value: '10800',
+                    value: '0 */3 * * *',
                     label: `3 ${t('admin:components.project.hours')}`
                   },
                   {
-                    value: '21600',
+                    value: '0 */6 * * *',
                     label: `6 ${t('admin:components.project.hours')}`
                   },
                   {
-                    value: '43200',
+                    value: '0 */12 * * *',
                     label: `12 ${t('admin:components.project.hours')}`
                   },
                   {
-                    value: '86400',
+                    value: '0 0 * * *',
                     label: `1 ${t('admin:components.project.day')}`
                   }
                 ]}

@@ -11,7 +11,7 @@ import { NotificationService } from '../../../common/services/NotificationServic
 import { ProjectService } from '../../../common/services/ProjectService'
 import DrawerView from '../../common/DrawerView'
 import LoadingView from '../../common/LoadingView'
-import { ProjectUpdateService, useProjectUpdateState } from '../../services/ProjectUpdateService'
+import { DefaultUpdateSchedule, ProjectUpdateService, useProjectUpdateState } from '../../services/ProjectUpdateService'
 import styles from '../../styles/admin.module.scss'
 import ProjectFields from './ProjectFields'
 
@@ -36,7 +36,8 @@ const ProjectDrawer = ({ open, inputProject, existingProject = false, onClose, c
           thumbnail: '',
           repositoryPath: '',
           needsRebuild: false,
-          updateType: 'none' as ProjectUpdateType
+          updateType: 'none' as ProjectUpdateType,
+          updateSchedule: DefaultUpdateSchedule
         }
 
   const projectUpdateStatus = useProjectUpdateState()[project.name].value
@@ -53,7 +54,10 @@ const ProjectDrawer = ({ open, inputProject, existingProject = false, onClose, c
           projectUpdateStatus.destinationURL,
           projectUpdateStatus.projectName,
           true,
-          projectUpdateStatus.selectedSHA
+          projectUpdateStatus.selectedSHA,
+          projectUpdateStatus.sourceBranch,
+          projectUpdateStatus.updateType,
+          projectUpdateStatus.updateSchedule
         )
         setProcessing(false)
         handleClose()
@@ -84,7 +88,7 @@ const ProjectDrawer = ({ open, inputProject, existingProject = false, onClose, c
         processing={processing}
       />
 
-      <Container maxWidth="sm" className={styles.mt20}>
+      <Container maxWidth="sm" className={styles.mt10}>
         <DialogActions>
           <>
             <Button className={styles.outlinedButton} onClick={handleClose}>

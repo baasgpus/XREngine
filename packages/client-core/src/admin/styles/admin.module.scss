@@ -580,6 +580,14 @@
 
 .switchField {
   :global {
+    .Mui-checked .MuiSwitch-thumb {
+      color: var(--dropdownMenuSelectedBackground);
+    }
+
+    .Mui-checked .MuiSwitch-track {
+      background: var(--inputBackground);
+    }
+
     .MuiFormControlLabel-label {
       color: var(--textColor);
     }
