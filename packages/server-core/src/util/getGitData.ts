@@ -43,18 +43,42 @@ export function getGitHeadData(dir: string): string | undefined {
   return null!
 }
 
-export function getGitOrigHeadData(dir: string): string | undefined {
-  dir = dir + '/ORIG_HEAD'
+export function getGitOrigHeadData(dir: string, branch: string | undefined): string | undefined {
+  const origDir = dir + '/ORIG_HEAD'
 
-  if (!fs.existsSync(dir)) {
-    logger.warn('[Projects]: Could not find git ORIG_HEAD file at: ' + dir)
-    return null!
+  if (!fs.existsSync(origDir)) {
+    logger.warn('[Projects]: Could not find git ORIG_HEAD file at: ' + origDir)
+    return getGitPackedRefsData(dir, branch)
   }
-  const data = fs.readFileSync(dir)
+
+  const data = fs.readFileSync(origDir)
   try {
     return data.toString().trim()
   } catch (e) {
     logger.error(e, `Error getting git ORIG_HEAD data: ${e.message}`)
+  }
+  return null!
+}
+
+function getGitPackedRefsData(dir: string, branch: string | undefined): string | undefined {
+  dir = dir + '/packed-refs'
+
+  if (!fs.existsSync(dir)) {
+    logger.warn('[Projects]: Could not find git packed-refs file at: ' + dir)
+    return null!
+  }
+  if (!branch) {
+    logger.warn('[Projects]: Branch is empty. Could use git packed-refs file at: ' + dir)
+    return null!
+  }
+
+  const data = fs.readFileSync(dir)
+  try {
+    const content = data.toString().trim().split('\n')
+    const branchLine = content.find((line) => line.endsWith(branch))
+    return branchLine?.split(' ')[0]
+  } catch (e) {
+    logger.error(e, `Error getting git packed-refs data: ${e.message}`)
   }
   return null!
 }

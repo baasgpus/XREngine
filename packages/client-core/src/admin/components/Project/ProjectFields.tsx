@@ -3,7 +3,11 @@ import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProjectBranchInterface } from '@xrengine/common/src/interfaces/ProjectBranchInterface'
-import { ProjectInterface, ProjectUpdateType } from '@xrengine/common/src/interfaces/ProjectInterface'
+import {
+  DefaultUpdateSchedule,
+  ProjectInterface,
+  ProjectUpdateType
+} from '@xrengine/common/src/interfaces/ProjectInterface'
 import { ProjectTagInterface } from '@xrengine/common/src/interfaces/ProjectTagInterface'
 
 import { Difference } from '@mui/icons-material'
@@ -171,7 +175,7 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
           )
 
           if (tagExists) {
-            handleTagChange({ target: { value: project.destinationSha } })
+            handleTagChange({ target: { value: project.destinationSha, tagData: projectResponse } })
           }
         }
       }
@@ -186,9 +190,15 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
   const hasGithubProvider = selfUser?.identityProviders?.value?.find((ip) => ip.type === 'github')
 
   const handleTagChange = async (e) => {
+    let { value, tagData } = e.target
+
+    if (!tagData) {
+      tagData = projectUpdateStatus.value.tagData
+    }
+
     ProjectUpdateService.setSourceVsDestinationChecked(project, false)
-    ProjectUpdateService.setSelectedSHA(project, e.target.value)
-    const matchingTag = (projectUpdateStatus.value.tagData as any).find((data) => data.commitSHA === e.target.value)
+    ProjectUpdateService.setSelectedSHA(project, value)
+    const matchingTag = tagData.find((data) => data.commitSHA === e.target.value)
     ProjectUpdateService.setSourceProjectName(project, matchingTag.projectName || '')
     ProjectUpdateService.setTagError(project, '')
     ProjectUpdateService.setSourceValid(project, true)
@@ -540,7 +550,7 @@ const ProjectFields = ({ inputProject, existingProject = false, changeDestinatio
               <InputSelect
                 name="autoUpdateInterval"
                 label={t('admin:components.project.autoUpdateInterval')}
-                value={projectUpdateStatus.value?.updateSchedule}
+                value={projectUpdateStatus.value?.updateSchedule || DefaultUpdateSchedule}
                 menu={[
                   {
                     value: '* * * * *',

@@ -59,7 +59,7 @@ const ProjectDrawer = ({ open, inputProject, existingProject = false, onClose, c
           projectUpdateStatus.projectName,
           true,
           projectUpdateStatus.selectedSHA,
-          projectUpdateStatus.sourceBranch,
+          projectUpdateStatus.selectedBranch,
           projectUpdateStatus.updateType,
           projectUpdateStatus.updateSchedule
         )

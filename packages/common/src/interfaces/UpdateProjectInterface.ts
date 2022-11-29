@@ -8,5 +8,5 @@ export type UpdateProjectInterface = {
   commitSHA: string
   sourceBranch: string
   updateType: ProjectUpdateType
-  updateSchedule?: string
+  updateSchedule: string
 }

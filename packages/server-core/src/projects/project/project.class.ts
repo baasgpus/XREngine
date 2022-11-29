@@ -84,7 +84,7 @@ const getGitProjectData = (project) => {
     response.sourceBranch = branch
   }
 
-  const sha = getGitOrigHeadData(projectGitDir)
+  const sha = getGitOrigHeadData(projectGitDir, branch)
   if (sha) {
     response.destinationSha = sha
   }
