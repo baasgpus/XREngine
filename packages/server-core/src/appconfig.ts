@@ -181,6 +181,13 @@ const taskserver = {
 }
 
 /**
+ * Scheduled server generator
+ */
+const scheduleserver = {
+  port: process.env.SCHEDULESERVER_PORT!
+}
+
+/**
  * Email / SMTP
  */
 const email = {
@@ -366,6 +373,7 @@ const config = {
   ipfs,
   server,
   taskserver,
+  scheduleserver,
   redis,
   scopes,
   blockchain,

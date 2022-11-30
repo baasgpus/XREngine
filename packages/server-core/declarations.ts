@@ -11,7 +11,8 @@ import { SocketWebRTCServerNetwork } from '../instanceserver/src/SocketWebRTCSer
 export const ServerMode = {
   API: 'API' as const,
   Instance: 'Instance' as const,
-  Task: 'Task' as const
+  Task: 'Task' as const,
+  Scheduled: 'Scheduled' as const
 }
 
 export type ServerTypeMode = typeof ServerMode[keyof typeof ServerMode]

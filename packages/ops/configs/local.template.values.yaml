@@ -311,6 +311,10 @@ instanceserver:
     minReplicas: 4
     maxReplicas: 10
     
+builder:
+  image:
+    repository: "xrengine-builder"
+
 testbot:
   extraEnv:
     APP_HOST: local.etherealengine.com
