@@ -1,7 +1,7 @@
 /**
  * Config settings (for client and isomorphic engine usage).
  */
-const localBuildOrDev = process.env.APP_ENV === 'development' || process.env['VITE_LOCAL_BUILD'] === 'true'
+const localBuildOrDev = process.env.APP_ENV === 'development' || process.env.VITE_LOCAL_BUILD === 'true'
 
 export function validateEmail(email: string): boolean {
   return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)

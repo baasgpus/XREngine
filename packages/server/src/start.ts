@@ -1,3 +1,6 @@
+import express from '@feathersjs/express'
+import packageRoot from 'app-root-path'
+import expressStaticGzip from 'express-static-gzip'
 import fs from 'fs'
 import https from 'https'
 import path from 'path'
@@ -100,4 +103,30 @@ export const start = async (): Promise<void> => {
   if (!config.kubernetes.enabled) {
     StartCorsServer(useSSL, certOptions)
   }
+
+  const clientApp = express()
+  clientApp.use(
+    expressStaticGzip(path.join(packageRoot.path, 'packages', 'server', 'dist'), {
+      enableBrotli: true
+    })
+  )
+  clientApp.use('*', (req, res) =>
+    res.sendFile(path.join(packageRoot.path, 'packages', 'server', 'dist', 'index.html'))
+  )
+  clientApp.listen = function () {
+    let server
+    const HTTPS = process.env.VITE_LOCAL_BUILD ?? false
+    if (HTTPS) {
+      const key = fs.readFileSync('../../certs/key.pem')
+      const cert = fs.readFileSync('../../certs/cert.pem')
+      server = https.createServer({ key: key, cert: cert }, this)
+    } else {
+      const http = require('http')
+      server = http.createServer(this)
+    }
+    return server.listen.apply(server, arguments)
+  }
+
+  const PORT = config.client.port || 3000
+  clientApp.listen(PORT, () => console.log(`Server listening on port: ${PORT}`))
 }
