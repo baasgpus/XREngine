@@ -9,8 +9,9 @@
  *     Note: The sending/aggregation to Elastic only happens when APP_ENV !== 'development'.
  *
  */
-import { LruCache } from '@digitalcredentials/lru-memoize'
+
 import fetch from 'cross-fetch'
+import lruCache from 'lru-cache'
 
 import config from './config'
 
