@@ -19,8 +19,8 @@ app.use('*', (req, res) => res.sendFile(path.join(packageRoot, 'packages', 'clie
 app.listen = function () {
   let server
   if(HTTPS) {
-    const key = fs.readFileSync('../../certs/key.pem');
-    const cert = fs.readFileSync('../../certs/cert.pem');
+    const key = fs.readFileSync(path.join(packageRoot.path, 'certs/key.pem'))
+    const cert = fs.readFileSync(path.join(packageRoot.path, 'certs/cert.pem'))
     server = https.createServer({key: key, cert: cert }, this);
   } else {
     server = http.createServer(this)

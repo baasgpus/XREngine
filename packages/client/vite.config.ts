@@ -1,5 +1,6 @@
 import { viteCommonjs } from '@originjs/vite-plugin-commonjs'
 import appRootPath from 'app-root-path'
+import packageRoot from 'app-root-path'
 import dotenv from 'dotenv'
 import fs from 'fs'
 import fsExtra from 'fs-extra'
@@ -142,8 +143,8 @@ export default defineConfig(async () => {
   } as UserConfig
   if (process.env.APP_ENV === 'development' || process.env.VITE_LOCAL_BUILD === 'true') {
     returned.server!.https = {
-      key: fs.readFileSync('../../certs/key.pem'),
-      cert: fs.readFileSync('../../certs/cert.pem')
+      key: fs.readFileSync(path.join(packageRoot.path, 'certs/key.pem')),
+      cert: fs.readFileSync(path.join(packageRoot.path, 'certs/cert.pem'))
     }
   }
   if (

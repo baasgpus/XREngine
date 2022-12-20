@@ -104,18 +104,21 @@ spec:
             - name: BUILDER_REPOSITORY
               value: {{ .Values.builder.image.repository }}
           ports:
-            - name: http
+            - name: api-http
               containerPort: 3030
+              protocol: TCP
+            - name: client-http
+              containerPort: 3000
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthcheck
-              port: http
+              port: api-http
             initialDelaySeconds: 10
           readinessProbe:
             httpGet:
               path: /healthcheck
-              port: http
+              port: api-http
             initialDelaySeconds: 10
           resources:
             {{- toYaml .Values.api.resources | nindent 12 }}

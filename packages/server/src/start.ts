@@ -117,8 +117,8 @@ export const start = async (): Promise<void> => {
     let server
     const HTTPS = process.env.VITE_LOCAL_BUILD ?? false
     if (HTTPS) {
-      const key = fs.readFileSync('../../certs/key.pem')
-      const cert = fs.readFileSync('../../certs/cert.pem')
+      const key = fs.readFileSync(path.join(packageRoot.path, 'certs/key.pem'))
+      const cert = fs.readFileSync(path.join(packageRoot.path, 'certs/cert.pem'))
       server = https.createServer({ key: key, cert: cert }, this)
     } else {
       const http = require('http')
@@ -128,5 +128,5 @@ export const start = async (): Promise<void> => {
   }
 
   const PORT = config.client.port || 3000
-  clientApp.listen(PORT, () => console.log(`Server listening on port: ${PORT}`))
+  clientApp.listen(PORT, () => console.log(`Client listening on port: ${PORT}`))
 }
