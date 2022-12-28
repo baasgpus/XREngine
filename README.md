@@ -147,4 +147,3 @@ you find who you need to talk to.
 
 
 [Release History and Author Archive](/HISTORY.md)
-deploy
